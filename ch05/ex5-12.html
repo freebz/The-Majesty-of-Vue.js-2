@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+    <title>Hello Vue</title>
+  </head>
+  <body>
+    <div class="container">
+      a={{ a }}, b={{ b }}
+      <input v-model.number="a">
+      <pre>
+        {{ $data }}
+      </pre>
+    </div>
+  </body>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.3.4/vue.js"></script>
+  <script type="text/javascript">
+    new Vue({
+      el: '.container',
+      data: {
+	a: 1,
+      },
+      computed: {
+	// 계산된 접근자
+	b: function () {
+	  // this는 Vue 인스턴스를 가리킵니다
+	  return this.a + 1
+	}
+      }
+    });
+  </script>
+</html>
