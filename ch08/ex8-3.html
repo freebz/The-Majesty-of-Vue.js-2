@@ -1,0 +1,59 @@
+<html>
+  <head>
+    <title>Food Battle</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container text-center">
+      <p style="font-size: 140px;">
+	{{ votes }}
+      </p>
+
+      <div class="row">	
+	<food @voted="countVote" name="Cheeseburger"></food>
+	<food @voted="countVote" name="Double Bacon Burger"></food>
+	<food @voted="countVote" name="Rodeo Burger"></food>
+      </div>
+    </div>
+  </body>
+  <template id="food">
+    <div class="text-center col-lg-4">
+      <p style="font-size: 40px;">
+	{{ votes }}
+      </p>
+      <button class="btn btn-default" @click="vote">{{ name }}</button>
+    </div>
+  </template>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.3.4/vue.js"></script>
+  <script type="text/javascript">
+    var bus = new Vue()
+    
+    Vue.component('food', {
+      template: '#food',
+      props: ['name'],
+      data: function () {
+	return {
+	  votes: 0
+	}
+      },
+      methods: {
+	vote: function () {
+	  this.votes++
+	  this.$emit('voted')
+	}
+      }
+    })
+    
+    new Vue({
+      el: '.container',
+      data: {
+	votes: 0
+      },
+      methods: {
+	countVote: function () {
+	  this.votes++
+	},
+      }
+    })	      
+  </script>
+</html>
