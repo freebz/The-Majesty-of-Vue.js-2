@@ -1,0 +1,96 @@
+<html>
+  <head>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+    <title>User Stories</title>
+  </head>
+  <body>
+    <div id="app">      
+      <table class="table table-striped">
+	<tr>
+	  <th>#</th>
+	  <th>Plot</th>
+	  <th>Writer</th>
+	  <th>Upvotes</th>
+	  <th>Actions</th>
+	</tr>
+	<tr v-for="story in stories" is="story" :story="story"></tr>
+      </table>
+      <p class="lead">Here's a list of all your stories.
+      </p>
+      <pre>{{ $data }}</pre>
+    </div>
+    <template id="template-story-raw">
+      <tr>
+	<td>
+	  {{story.id}}
+	</td>
+	<td>
+	  <span>
+	    {{story.plot}}
+	  </span>
+	</td>
+	<td>
+	  <span>
+	    {{story.writer}}
+	  </span>
+	</td>
+	<td>
+	  {{story.upvotes}}
+	</td>
+	<td>
+	  <div class="btn-group">
+	    <button @click="upvoteStory(story)" class="btn btn-primary">
+	      Upvote
+	    </button>
+	    <button @click="deleteStory(story)" class="btn btn-danger">
+	      Delete
+	    </button>
+	  </div>
+	</td>
+      </tr>
+    </template>
+  </body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.3.4/vue.js"></script>
+  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+  <script type="text/javascript">
+    Vue.component('story', {
+      template: '#template-story-raw',
+      props: ['story'],
+      methods: {
+	upvoteStory: function(story){
+	  story.upvotes++;
+	  $.ajax({
+	    url: '/api/stories/'+story.id,
+	    type: 'PATCH',
+	    data: story,
+	  });
+	},
+	deleteStory: function(story){
+	  // story 찾기
+	  var index = vm.stories.indexOf(story);
+
+	  // 삭제
+	  vm.stories.splice(index, 1)
+
+	  // DELETE 요청
+	  $.ajax({
+	    url: '/api/stories/'+story.id,
+	    type: 'DELETE'
+	  });
+	}
+      }
+    });
+
+    var vm = new Vue({
+      el: '#app',
+      data: {
+	stories: []
+      },
+      mounted: function(){
+	$.get('/api/stories', function(data){
+	  vm.stories = data;
+	})
+      }
+    })
+  </script>
+</html>
