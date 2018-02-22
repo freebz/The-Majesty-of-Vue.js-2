@@ -1,0 +1,102 @@
+<html>
+  <head>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+    <title>User Stories</title>
+  </head>
+  <body>
+    <div id="app">      
+      <table class="table table-striped">
+	<tr>
+	  <th>#</th>
+	  <th>Plot</th>
+	  <th>Writer</th>
+	  <th>Upvotes</th>
+	  <th>Actions</th>
+	</tr>
+	<tr v-for="story in stories" is="story" :story="story"></tr>
+      </table>
+      <p class="lead">Here's a list of all your stories.
+      </p>
+      <pre>{{ $data }}</pre>
+    </div>
+    <template id="template-story-raw">
+      <tr>
+	<td>
+	  {{story.id}}
+	</td>
+	<td>
+	  <!-- 이야기를 수정하는 경우 줄거리에 대한 입력 필드를 출력 -->
+	  <input v-if="story.editing" v-model="story.plot" class="form-control">
+	  </input>
+	  <!-- 그 밖의 경우 이야기의 줄거리를 출력 -->
+	  <span v-else>
+	    {{story.plot}}
+	  </span>
+	</td>
+	<td>
+	  <!-- 이야기를 수정하는 경우 작가에 대한 입력 필드를 출력 -->
+	  <input v-if="story.editing" v-model="story.writer" class="form-control">
+	  </input>
+	  <!-- 그 밖의 경우 이야기의 작가를 출력 -->
+	  <span v-else>
+	    {{story.writer}}
+	  </span>
+	</td>
+	<td>
+	  {{story.upvotes}}
+	</td>
+	<td>
+	  <div v-if="!story.editing" class="btn-group">
+	    <button @click="upvoteStory(story)" class="btn btn-primary">
+	      Upvote
+	    </button>
+	    <button @click="editStory(story)" class="btn btn-default">
+	      Edit
+	    </button>
+	    <button @click="deleteStory(story)" class="btn btn-danger">
+	      Delete
+	    </button>
+	  </div>
+	</td>
+      </tr>
+    </template>
+  </body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.3.4/vue.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>    
+  <script type="text/javascript">
+    Vue.component('story', {
+      template: '#template-story-raw',
+      props: ['story'],
+      methods: {
+	upvoteStory: function(story){
+	  story.upvotes++;
+	  axios.patch('/api/stories/' + story.id, story)
+	},
+	deleteStory: function(story){
+	  var index = vm.stories.indexOf(story);
+	  this.$parent.stories.splice(index, 1)
+	  axios.delete('/api/stories/' + story.id)
+	},
+	editStory: function(story){
+	  story.editing=true;
+	},
+      }
+    });
+
+    var vm = new Vue({
+      el: '#app',
+      data: {
+	stories: []
+      },
+      mounted: function(){
+	// GET 요청
+	axios.get('/api/stories')
+	 .then(function (response) {
+	   Vue.set(vm, 'stories', response.data)
+	   // 또는 이전에 본 것처럼
+	   // vm.stories = response.data
+	 })
+      }
+    })
+  </script>
+</html>
